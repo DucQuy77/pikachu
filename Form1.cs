@@ -21,7 +21,7 @@ namespace Pikachu
         private int score = 0;
         private string playerName;
 
-        private int timeLeft = 500;
+        private int timeLeft = 600;
         private System.Windows.Forms.Timer countdownTimer;
 
         public Form1(string tenNguoiChoi)
@@ -406,7 +406,7 @@ namespace Pikachu
             lblScore.Text = "Điểm: 0";
 
             //Reset timer
-            timeLeft = 500;
+            timeLeft = 600;
             lblTime.Text = "Thời gian: " + timeLeft + "s";
 
             if (countdownTimer != null)
@@ -421,7 +421,7 @@ namespace Pikachu
 
         private void StartCountDown()
         {
-            timeLeft = 500;
+            timeLeft = 600;
             lblTime.Text = "Thời gian: " + timeLeft + "s";
             countdownTimer.Start();
         }
