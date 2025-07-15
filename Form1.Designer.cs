@@ -111,11 +111,13 @@
             // 
             // panelBoard
             // 
-            panelBoard.Dock = DockStyle.Fill;
+            panelBoard.BackColor = Color.White;
+            panelBoard.BorderStyle = BorderStyle.FixedSingle;
             panelBoard.Location = new Point(0, 44);
             panelBoard.Name = "panelBoard";
             panelBoard.Size = new Size(875, 495);
             panelBoard.TabIndex = 1;
+            panelBoard.Paint += panelBoard_Paint;
             // 
             // Form1
             // 

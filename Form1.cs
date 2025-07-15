@@ -78,7 +78,7 @@ namespace Pikachu
             boardMap = new int[rows + 2, cols + 2];
 
             List<int> pokemonIndexes = new List<int>();
-            for (int i = 0; i < (rows * cols)/2; i++)
+            for (int i = 0; i < (rows * cols) / 2; i++)
             {
                 int randomIndexes = i % pokemonImages.Length;
                 pokemonIndexes.Add(randomIndexes);
@@ -88,7 +88,7 @@ namespace Pikachu
             Shuffer(pokemonIndexes);
 
             int forcedIndex = pokemonIndexes[0];
-            boardMap[1,1] = forcedIndex;
+            boardMap[1, 1] = forcedIndex;
             boardMap[1, cols] = forcedIndex;
             pokemonIndexes.Remove(forcedIndex);
             pokemonIndexes.Remove(forcedIndex);
@@ -121,7 +121,7 @@ namespace Pikachu
 
                     //int pokemonIndex = pokemonIndexes[imageIndex++];
                     pb.Image = pokemonImages[boardMap[i, j]];
-                    
+
 
                     pb.Click += PictureBox_Click;
                     panelBoard.Controls.Add(pb);
@@ -174,13 +174,6 @@ namespace Pikachu
                         connectionPoints.Clear();
                         panelBoard.Invalidate();
                         timer.Stop();
-
-                        if (IsBoardCleared())
-                        {
-                            countdownTimer.Stop();
-                            SaveOrUpdatePlayerScore(playerName, score);
-                            MessageBox.Show("Chúc mừng! Bạn đã hoàn thành trò chơi!", "Thành công", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        }
                     };
                     timer.Start();
                 }
@@ -196,6 +189,7 @@ namespace Pikachu
             {
                 int minY = Math.Min(a.Y, b.Y);
                 int maxY = Math.Max(a.Y, b.Y);
+
                 for (int y = minY + 1; y < maxY; y++)
                 {
                     if (boardMap[a.X, y] != -1)
@@ -211,7 +205,7 @@ namespace Pikachu
                 int maxX = Math.Max(a.X, b.X);
                 for (int x = minX + 1; x < maxX; x++)
                 {
-                    if (boardMap[x, a.Y] != -1)
+                    if (!IsEmpty(new Point(x, a.Y)))
                     {
                         return null;
                     }
@@ -262,22 +256,28 @@ namespace Pikachu
 
         private bool IsEmpty(Point p)
         {
+            if(p.X < 0 || p.X > rows + 1 || p.Y < 0 || p.Y > cols + 1)
+                return false;
+            if(p.X == 0 || p.X == rows + 1 || p.Y == 0 || p.Y == cols + 1) 
+                return true;
             return boardMap[p.X, p.Y] == -1;
         }
 
         private bool IsBoardCleared()
         {
-            for (int i = 1; i <= rows; i++) {
-                for (int j = 1; j <= cols; j++) {
-                    if (boardMap[i,j] != -1)
+            for (int i = 1; i <= rows; i++)
+            {
+                for (int j = 1; j <= cols; j++)
+                {
+                    if (boardMap[i, j] != -1)
                     {
                         return false;
                     }
                 }
-            } 
+            }
             return true;
         }
-        
+
         private void Shuffer(List<int> list)
         {
             Random rng = new Random();
@@ -294,28 +294,31 @@ namespace Pikachu
 
         private List<Point>? CanConnect3Lines(Point a, Point b)
         {
-            for (int i = 0; i < rows; i++)
+            for (int i = 0; i <= rows + 1; i++)
             {
-                for (int j = 0; j < cols; j++)
+                for (int j = 0; j <= cols + 1; j++)
                 {
-                    Point mid1 = new Point(i, j);
-                    if (!IsEmpty(mid1) || mid1 == a || mid1 == b) continue;
+                    Point mid = new Point(i, j);
+                    if (!IsEmpty(mid) || mid == a || mid == b) continue;
 
-                    for (int x = 0; x < rows; x++)
+                    var path1 = CanConnectStraight(a, mid);
+                    var path2 = CanConnectLShape(mid, b);
+
+                    if (path1 != null && path2 != null)
                     {
-                        for (int y = 0; y < cols; y++)
-                        {
-                            Point mid2 = new Point(x, y);
-                            if (!IsEmpty(mid2) || mid2 == a || mid2 == b || mid2 == mid1) continue;
+                        List<Point> fullPath = new List<Point>(path1);
+                        fullPath.AddRange(path2.Skip(1));
+                        return fullPath;
+                    }
 
-                            // A → mid1 → mid2 → B
-                            if (CanConnectStraight(a, mid1) != null &&
-                                CanConnectStraight(mid1, mid2) != null &&
-                                CanConnectStraight(mid2, b) != null)
-                            {
-                                return new List<Point> { a, mid1, mid2, b };
-                            }
-                        }
+                    var path3 = CanConnectLShape(a, mid);
+                    var path4 = CanConnectLShape(mid, b);
+
+                    if (path3 != null && path4 != null)
+                    {
+                        List<Point> fullPath = new List<Point>(path3);
+                        fullPath.AddRange(path4.Skip(1));
+                        return fullPath;
                     }
                 }
             }
@@ -389,7 +392,7 @@ namespace Pikachu
             }
         }
 
-        private void ResetGame()
+        private void ResetGame(bool isContinue = false)
         {
             //Xóa tất cả PictureBox
             panelBoard.Controls.Clear();
@@ -401,12 +404,19 @@ namespace Pikachu
             selected2 = null;
             connectionPoints.Clear();
 
-            //Reset điểm
-            score = 0;
-            lblScore.Text = "Điểm: 0";
+            if (!isContinue) { 
+                //Reset điểm
+                score = 0;
+                lblScore.Text = "Điểm: 0";
+                
+                //Reset timer
+                timeLeft = 600;
+            }
+            else
+            {
+                timeLeft = 550;
+            }
 
-            //Reset timer
-            timeLeft = 600;
             lblTime.Text = "Thời gian: " + timeLeft + "s";
 
             if (countdownTimer != null)
@@ -425,31 +435,45 @@ namespace Pikachu
             lblTime.Text = "Thời gian: " + timeLeft + "s";
             countdownTimer.Start();
         }
-        
+
         private void CountdownTimer_Tick(object sender, EventArgs e)
         {
+            if (IsBoardCleared())
+            {
+                countdownTimer.Stop();
+                SaveOrUpdatePlayerScore(playerName, score);
+
+                var result = MessageBox.Show("Bạn đã thắng cuộc!\nBạn có muốn tiếp tục chơi không?", "Chúc mừng bạn !", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+                if (result == DialogResult.Yes)
+                {
+                    ResetGame(true);
+                }
+                else
+                {
+                    FormBXH bxhForm = new FormBXH();
+                    bxhForm.ShowDialog();
+                    this.Close();
+                }
+
+                return;
+            }
+
             timeLeft--;
             lblTime.Text = "Thời gian: " + timeLeft + "s";
 
             if (timeLeft <= 0)
             {
-                countdownTimer.Stop();
-                if (IsBoardCleared())
+                DialogResult result = MessageBox.Show("Bạn đã thua cuộc! Hãy chơi lại! ", "Hết giờ", MessageBoxButtons.YesNo);
+                if (result == DialogResult.Yes)
                 {
-                    MessageBox.Show("Bạn đã thắng cuộc!", "Kết thúc");
+                    ResetGame();
                 }
                 else
                 {
-                    DialogResult result = MessageBox.Show("Bạn đã thua cuộc! Hãy chơi lại! ", "Hết giờ", MessageBoxButtons.YesNo);
-                    if (result == DialogResult.Yes) { 
-                        ResetGame();
-                    }
-                    else
-                    {
-                        this.Close();
-                    }
+                    this.Close();
                 }
             }
+
         }
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
@@ -466,6 +490,20 @@ namespace Pikachu
         private void btnChoiLai_Click(object sender, EventArgs e)
         {
             ResetGame();
+        }
+
+        private void panelBoard_Paint(object sender, PaintEventArgs e)
+        {
+            if (connectionPoints.Count > 1)
+            {
+                using (Pen redPen = new Pen(Color.Red, 2))
+                {
+                    for (int i = 0; i < connectionPoints.Count - 1; i++)
+                    {
+                        e.Graphics.DrawLine(redPen, connectionPoints[i], connectionPoints[i + 1]);
+                    }
+                }
+            }
         }
     }
 }
