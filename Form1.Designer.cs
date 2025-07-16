@@ -35,6 +35,7 @@
             lblTime = new Label();
             lblScore = new Label();
             panelBoard = new Panel();
+            panelOverlay = new Panel();
             panelTop.SuspendLayout();
             SuspendLayout();
             // 
@@ -49,7 +50,7 @@
             panelTop.Dock = DockStyle.Top;
             panelTop.Location = new Point(0, 0);
             panelTop.Name = "panelTop";
-            panelTop.Size = new Size(875, 44);
+            panelTop.Size = new Size(886, 44);
             panelTop.TabIndex = 0;
             // 
             // btnBangXH
@@ -113,17 +114,26 @@
             // 
             panelBoard.BackColor = Color.White;
             panelBoard.BorderStyle = BorderStyle.FixedSingle;
-            panelBoard.Location = new Point(0, 44);
+            panelBoard.Location = new Point(12, 50);
             panelBoard.Name = "panelBoard";
-            panelBoard.Size = new Size(875, 495);
+            panelBoard.Size = new Size(862, 488);
             panelBoard.TabIndex = 1;
             panelBoard.Paint += panelBoard_Paint;
+            // 
+            // panelOverlay
+            // 
+            panelOverlay.Location = new Point(0, 53);
+            panelOverlay.Name = "panelOverlay";
+            panelOverlay.Size = new Size(8, 8);
+            panelOverlay.TabIndex = 0;
+            panelOverlay.Paint += panelOverlay_Paint;
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(875, 539);
+            ClientSize = new Size(886, 550);
+            Controls.Add(panelOverlay);
             Controls.Add(panelBoard);
             Controls.Add(panelTop);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -146,5 +156,6 @@
         private Panel panelBoard;
         private Label lblDiemCao;
         private Button btnBangXH;
+        private Panel panelOverlay;
     }
 }

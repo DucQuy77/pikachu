@@ -34,6 +34,11 @@ namespace Pikachu
             this.FormClosing += Form1_FormClosing;
             btnChoiLai.Click += btnChoiLai_Click;
 
+            panelBoard.BackColor = Color.Transparent;
+            panelOverlay.BringToFront();
+            panelOverlay.Paint += panelOverlay_Paint;
+            panelOverlay.Invalidate();
+
             int highScore = GetHightScore(playerName);
             lblDiemCao.Text = "Điểm kỷ lục: " + highScore;
 
@@ -256,9 +261,9 @@ namespace Pikachu
 
         private bool IsEmpty(Point p)
         {
-            if(p.X < 0 || p.X > rows + 1 || p.Y < 0 || p.Y > cols + 1)
+            if (p.X < 0 || p.X > rows + 1 || p.Y < 0 || p.Y > cols + 1)
                 return false;
-            if(p.X == 0 || p.X == rows + 1 || p.Y == 0 || p.Y == cols + 1) 
+            if (p.X == 0 || p.X == rows + 1 || p.Y == 0 || p.Y == cols + 1)
                 return true;
             return boardMap[p.X, p.Y] == -1;
         }
@@ -404,11 +409,12 @@ namespace Pikachu
             selected2 = null;
             connectionPoints.Clear();
 
-            if (!isContinue) { 
+            if (!isContinue)
+            {
                 //Reset điểm
                 score = 0;
                 lblScore.Text = "Điểm: 0";
-                
+
                 //Reset timer
                 timeLeft = 600;
             }
@@ -493,6 +499,20 @@ namespace Pikachu
         }
 
         private void panelBoard_Paint(object sender, PaintEventArgs e)
+        {
+            if (connectionPoints.Count > 1)
+            {
+                using (Pen redPen = new Pen(Color.Red, 2))
+                {
+                    for (int i = 0; i < connectionPoints.Count - 1; i++)
+                    {
+                        e.Graphics.DrawLine(redPen, connectionPoints[i], connectionPoints[i + 1]);
+                    }
+                }
+            }
+        }
+
+        private void panelOverlay_Paint(object sender, PaintEventArgs e)
         {
             if (connectionPoints.Count > 1)
             {

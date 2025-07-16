@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Pikachu")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a58e94cf7865868db537c31c07c701e36f2f5f27")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+81f8bed4a01e589c6d6b5c69e8ffb611c9dc2e54")]
 [assembly: System.Reflection.AssemblyProductAttribute("Pikachu")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Pikachu")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
